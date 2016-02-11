@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Carousel</title>
+	<script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="bower_components/angular/angular.js"></script>
+	<script type="text/javascript" src="bower_components/owl.carousel/dist/owl.carousel.js"></script>
+	<link rel="stylesheet" type="text/css" href="bower_components/owl.carousel/dist/assets/owl.carousel.css" />
+	<link rel="stylesheet" type="text/css" href="bower_components/owl.carousel/dist/assets/owl.theme.default.css">
+	<script type="text/javascript" src="directive-owl.js"></script>
+
+	<script type="text/javascript">
+		 myapp = angular.module('myApp', []);
+
+		 	myapp.factory('wHttp', function ($http) {
+
+		         function Http() {}
+
+		         Http.get = function (url, config) {
+		           return $http.get(url, config);
+		         };
+
+		         return Http;
+		         
+		       });
+
+		     myapp.controller('indexCtrl', function($scope, $timeout, wHttp){
+
+		     	var uuid = 'juliahengel';
+
+		     	var api = "http://api.staging.witlee.com/";
+		     	var version = "v1/";
+		     	var influencer = "influencers/";
+		     	var category = "/popular";
+
+		     	var url = api + version + influencer + uuid + category;
+		     	var config = {
+		     		params: {
+		     			page: 1
+		     		}
+		     	};
+
+		     	$scope.data = [];
+		     	$scope.results = [];
+
+		     	// $scope.getTilesHomeStore = function(url, config) {
+		     	// 	wHttp.get(  url, config ).then(function(res){
+		     	// 		res.data;
+		     	// 	});
+		     	// }
+
+		     	$scope.init = function() {
+		     		
+		     		wHttp.get(  url, config ).then(function(res){
+		     			$scope.data = res.data;
+
+		     			$scope.results = res.data.results;
+
+		     			config.params.page++;
+
+	     				$timeout(function(){
+			                $scope.$emit('loaded', true);
+			            });
+
+
+		     			// console.log($scope.results)
+
+		     			// var options = {
+		     			// 	items: 2,
+		     			// 	nav: true,
+		     			// 	dots: false,
+		     			// 	responsiveClass: false
+		     			// }
+
+		     			// $('.owl-carousel').owlCarousel(options)
+
+		     			// $('.owl-carousel').owlCarousel('destroy')
+
+		     			// for (var i = 0; i < res.data.results.length; i++) {
+		     			// 	console.log(res.data.results[i].id)
+		     			// 	$('.owl-carousel').owlCarousel('add', '<div>' + res.data.results[i].id + '</div>');
+		     			// }
+
+		     			// $('.owl-carousel').owlCarousel('update')
+
+
+
+		     			// $scope.results = res.data.results;
+		     			// $timeout(function() {
+		     			// 	$('.owl-carousel').owlCarousel('update')
+		     			// ,100});
+		     		});
+		        }
+
+		        $scope.$on('notification', function (evt, value) {
+		        	// console.log(value)
+
+		        	var count = value.item.count;
+		        	var index = value.item.index;
+
+		        	if (count - index == 3) {
+
+		        		wHttp.get(  url, config ).then(function(res){
+		        			config.params.page++;
+
+		        			for (var i = 0; i < res.data.results.length; i++) {
+		        				// console.log(res.data.results[i].id)
+		        				$('.owl-carousel').owlCarousel('add', '<div class="item"><img src="' + res.data.results[i].imagetile_url + '" alt="' + res.data.results[i].profile.name + '"/></div>');
+		        			}
+		        			$('.owl-carousel').owlCarousel('update')
+
+		        			// console.log($scope.results.length)
+		        			// Array.prototype.push.apply($scope.results, res.data.results);
+		        			// console.log($scope.results.length)
+		        			// $timeout(function(){
+				         //        $scope.$emit('loaded', true);
+				         //    });
+		        		});
+
+			        	// $('.owl-carousel').owlCarousel('add', '<div>foo</div>').owlCarousel('update');
+		        	}
+		        	
+			    });
+
+		        // $('.owl-carousel').owlCarousel('add', '<div>foo</div>').owlCarousel('update');
+		        
+		     });
+
+		     myapp.directive('owlCarousel', ['$parse', '$timeout', owlCarouselDirective]);
+
+		     function owlCarouselDirective($parse, $timeout) {
+
+		     	var owlOptions = [
+		     		'items',
+		     		'margin',
+		     		'loop',
+		     		'center',
+		     		'mouseDrag',
+		     		'touchDrag',
+		     		'pullDrag',
+		     		'freeDrag',
+		     		'merge',
+		     		'mergeFit',
+		     		'autoWidth',
+		     		'startPosition',
+		     		'URLhashListener',
+		     		'nav',
+		     		'navRewind',
+		     		'navText',
+		     		'slideBy',
+		     		'dots',
+		     		'dotsEach',
+		     		'dotData',
+		     		'lazyLoad',
+		     		'lazyContent',
+		     		'autoplay',
+		     		'autoplayTimeout',
+		     		'autoplayHoverPause',
+		     		'smartSpeed',
+		     		'fluidSpeed',
+		     		'autoplaySpeed',
+		     		'dotsSpeed',
+		     		'dragEndSpeed',
+		     		'callbacks',
+		     		'responsive',
+		     		'responsiveRefreshRate',
+		     		'responsiveBaseElement',
+		     		'responsiveClass',
+		     		'video',
+		     		'videoHeight',
+		     		'videoWidth',
+		     		'animateOut',
+		     		'animateIn',
+		     		'fallbackEasing',
+		     		'info',
+		     		'nestedItemSelector',
+		     		'itemElement',
+		     		'stageElement',
+		     		'navContainer',
+		     		'dotsContainer',
+		     		// Classes
+		     		'themeClass',
+		     		'baseClass',
+		     		'itemClass',
+		     		'centerClass',
+		     		'activeClass',
+		     		'navContainerClass',
+		     		'navClass',
+		     		'controlsClass',
+		     		'dotClass',
+		     		'dotsClass',
+		     		'autoHeightClass',
+		     		// Callbacks
+		     		'onInitialize',
+		     		'onInitialized',
+		     		'onResize',
+		     		'onResized',
+		     		'onRefresh',
+		     		'onRefreshed',
+		     		'onDrag',
+		     		'onDragged',
+		     		'onTranslate',
+		     		'onTranslated',
+		     		'onChange',
+		     		'onChanged',
+		     		'onStopVideo',
+		     		'onPlayVideo',
+		     		'onLoadLazy',
+		     		'onLoadedLazy'
+		     	];
+
+		     	return {
+		     		restrict: 'A',
+		     		transclude: true,
+		     		link: function (scope, element, attributes, controller, $transclude) {
+
+		     			scope.$on('loaded', function (evt, value) {
+			     			var options = {
+			     				items: 2,
+			     				nav: true,
+			     				dots: false,
+			     				responsiveClass: false,
+			     				onChanged: changed
+			     			},
+			     				$element = $(element),
+			     				owlCarousel = null,
+			     				propertyName = attributes.owlCarousel;
+
+			     			function changed(event) {
+			     				$timeout(function(){
+					                scope.$emit('notification', event);
+					            });
+			     			}
+
+			     			for (var i = 0; i < owlOptions.length; i++) {
+			     				var opt = owlOptions[i];
+			     				if (attributes[opt] !== undefined) {
+			     					options[opt] = $parse(attributes[opt])();
+			     				}
+			     			}
+
+			     			scope.$watchCollection(propertyName, function (newItems, oldItems) {
+
+			     				if (owlCarousel) {
+			     					owlCarousel.destroy();
+			     				}
+			     				$element.empty();
+
+			     				for (var i in newItems) {
+			     					$transclude(function (clone, scope) {
+			     						scope.item = newItems[i];
+			     						$element.append(clone[1]);
+			     					});
+			     				}
+
+			     				$element.owlCarousel(options);
+			     				owlCarousel = $element.data('owlCarousel');
+			     			});
+		     			});
+
+		     		}
+		     	};
+		     }
+
+
+
+	</script>
+
+</head>
+<body ng-app="myApp">
+
+
+<div ng-controller="indexCtrl">
+	<div ng-init="init()">
+	    <div owl-carousel="results" class="owl-carousel owl-theme">
+	        <div class="item">
+	        	<img ng-src="{{ item.imagetile_url }}" alt="item.profile.name" />
+	        </div>
+	    </div>
+	</div>
+</div>
+
+</body>
+</html>
